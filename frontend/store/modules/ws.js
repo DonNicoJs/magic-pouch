@@ -11,7 +11,7 @@ const actions = {
     if (window.location.host.indexOf('localhost') > -1) {
       commit('SET_WS_URL', 'ws://localhost:9010/pouch');
     } else {
-      commit('SET_WS_URL', 'wss://magic-pouch.blazenet.info/pouch');
+      commit('SET_WS_URL', 'https://magic-pouch.blazenet.info/pouch');
     }
   }
 };
