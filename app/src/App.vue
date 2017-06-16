@@ -6,10 +6,18 @@
 </template>
 
 <script>
-/*
- * Root component
- */
-export default {};
+import { mapActions } from 'vuex';
+
+export default {
+  methods: {
+    ...mapActions({
+      findBaseURL: 'base/findBaseURL'
+    })
+  },
+  created () {
+    this.findBaseURL();
+  }
+};
 </script>
 
 <style></style>

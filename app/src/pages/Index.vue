@@ -17,12 +17,9 @@
       </div>
 
       <div v-show="showFilePicker" class="pick-file">
-        <q-uploader url="/api/send-file" @start="showLoading()" @finish="hideLoading()" :additional-fields="uploadParams"></q-uploader>
+        <q-uploader :url="uploadUrl" @start="showLoading()" @finish="hideLoading()" :additional-fields="uploadParams"></q-uploader>
       </div>
 
-      <div class="send-file" v-show="showFileSend">
-        <button class="primary generic-margin" @click="sendCode()">Send</button>
-      </div>
     </div>
   </q-layout>
 </template>
@@ -35,19 +32,18 @@
     },
     data () {
       return {
-        code: null,
-        file: null
+        code: null
       };
     },
     computed: {
       showFilePicker ({code}) {
         return code && code.length === 5;
       },
-      showFileSend ({file}) {
-        return !!file;
-      },
       uploadParams ({code}) {
         return [{name: 'uuid', value: code}];
+      },
+      uploadUrl () {
+        return this.$store.state.base.baseURL + '/api/send-file';
       }
     },
     methods: {
@@ -82,6 +78,9 @@
   .code-input {
     margin: 24px;
     text-align: center;
+    input {
+      text-align: center;
+    }
   }
   .code-scan {
     text-align: center;
