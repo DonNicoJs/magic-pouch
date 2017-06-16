@@ -7,9 +7,10 @@ const state = {
 const actions = {
   findBaseURL ({commit}) {
     if (Platform.is.mobile) {
-      commit('SET_BASE_URL', 'http://magic-pouch.blazenet.info');
+      commit('SET_BASE_URL', 'https://magic-pouch.blazenet.info');
+    } else {
+      commit('SET_BASE_URL', '');
     }
-    commit('SET_BASE_URL', '');
   }
 };
 
