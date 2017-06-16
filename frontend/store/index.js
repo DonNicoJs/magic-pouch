@@ -2,8 +2,8 @@ import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
 // system modules
-import auth from './auth';
-import ws from './ws';
+import auth from './modules/auth';
+import ws from './modules/ws';
 
 const persisted = createPersistedState({
   paths: ['auth']
