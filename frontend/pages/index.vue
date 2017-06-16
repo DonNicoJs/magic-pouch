@@ -1,6 +1,11 @@
 <template>
   <section class="container">
     <div>
+      <el-row type="flex" justify="center">
+        <el-col :span="6">
+          <p>Scan the code with the Magic-Pouch app or type it directly to start uploading files</p>
+        </el-col>
+      </el-row>
       <el-row type="flex" justify="center" align="middle" :gutter="20">
         <el-col :span="6">
           <img :src="qrUrl" alt="mainQr" class="code-qr">
