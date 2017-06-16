@@ -113,7 +113,7 @@ server.route({
         data.file.pipe(cipher).pipe(output);
 
         data.file.on('end', () => {
-          const path = `http://localhost:9090/uploads/${data.file.hapi.filename}/${data.uuid}/`;
+          const path = `/uploads/${data.file.hapi.filename}/${data.uuid}/`;
           const fileName = data.file.hapi.filename;
           const ctx = peersCache[data.uuid];
           ctx.ws.send(JSON.stringify({mutation: 'FILE_ADDED', namespace: 'ws', data: {fileName, path}}));
