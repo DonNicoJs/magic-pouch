@@ -49,6 +49,9 @@
       },
       files () {
         return this.$store.state.ws.files;
+      },
+      socketLink () {
+        return this.$store.state.socket.isConnected;
       }
     },
     methods: {
@@ -62,10 +65,15 @@
         });
       }
     },
-    created () {
-      if (!this.$isServer) {
-        this.uuid = this.createUUID();
-        this.registerToServer();
+    watch: {
+      socketLink: {
+        immediate: true,
+        handler: function (link) {
+          if (link && !this.$isServer) {
+            this.uuid = this.createUUID();
+            this.registerToServer();
+          }
+        }
       }
     }
   };

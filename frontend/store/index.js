@@ -24,6 +24,7 @@ const store = new Vuex.Store({
   state,
   mutations: {
     SOCKET_ONOPEN (state, event) {
+      console.debug('connect', event);
       state.socket.isConnected = true;
     },
     SOCKET_ONCLOSE (state, event) {
