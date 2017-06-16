@@ -1,0 +1,29 @@
+{
+  "name": "Magic-Pouch-API",
+  "version": "1.0.0",
+  "description": "Magic Pouch API",
+  "author": "lordfuoco <lordfuoco@gmail.com>",
+  "private": true,
+  "dependencies": {
+    "boom": "^4.3.1",
+    "hapi": "^16.1.0",
+    "hapi-auth-jwt2": "^7.2.4",
+    "hapi-plugin-websocket": "^1.1.5",
+    "inert": "^4.1.0",
+    "jsonwebtoken": "^7.3.0",
+    "password-hash": "^1.2.2",
+    "sequelize": "^3.30.2",
+    "sqlite3": "^3.1.8"
+  },
+  "scripts": {
+    "dev": "gulp",
+    "sequelize": "sequelize"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0",
+    "eslint-config-standard": "^6.2.1",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1",
+    "sequelize-cli": "^2.5.1"
+  }
+}
