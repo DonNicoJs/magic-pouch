@@ -15,7 +15,7 @@ const handlers = {
 // create the server
 const server = new Hapi.Server();
 
-server.connection({host: '127.0.0.1', port: 9090, routes: { cors: true }});
+server.connection({host: '127.0.0.1', port: 9010, routes: { cors: true }});
 
 server.register([Inert, jwtAuth, HAPIWebSocket], () => {});
 
@@ -171,6 +171,6 @@ server.route({
 
 models.sequelize.sync().then(function () {
   server.start(function () {
-    console.log('Running on 9090');
+    console.log('Running on 9010');
   });
 });
