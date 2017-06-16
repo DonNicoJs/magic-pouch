@@ -46,7 +46,7 @@ module.exports = {
     // https://github.com/chimurai/http-proxy-middleware
     proxyTable: {
       '/api': {
-        target: process.env.REMOTE_SERVER ? 'https://pdg.blazenet.info/' : 'http://localhost:9090/',
+        target: process.env.REMOTE_SERVER ? 'https://pdg.blazenet.info/' : 'http://localhost:9010/',
         changeOrigin: true,
         logLevel: 'debug'
       }
