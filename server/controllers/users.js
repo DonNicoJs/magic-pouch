@@ -21,28 +21,6 @@ const users = {
       res(user).code(200);
     });
   },
-  mentored: (req, res) => {
-    console.log(req.auth.credentials);
-    models.Users.findAll({
-      where: { UserId: req.auth.credentials.id },
-      include: [
-        {
-          model: models.daily_task,
-          include: [{model: models.why}]
-        },
-        {
-          model: models.weekly_task,
-          include: [{model: models.why}]
-        },
-        {
-          model: models.monthly_task,
-        }
-      ]
-    })
-      .then(users => {
-        res(users).code(200);
-      });
-  },
   create: (req, res) => {
     const u = req.payload;
     u.password = pHash.generate(u.password);
@@ -58,54 +36,6 @@ const users = {
         err.output.payload.details = err.data;
         res(err);
       });
-  },
-  promote: (req, res) => {
-    models.Users.update(
-      {type: 'admin'},
-      {where: {id: req.params.id, activated: 1}}
-    ).then(() => {
-      users.find(req, res);
-    }).catch(error => {
-      const err = Boom.notAcceptable(error.message, error.errors);
-      err.output.payload.details = err.data;
-      res(err);
-    });
-  },
-  activate: (req, res) => {
-    models.Users.update(
-      {activated: 1},
-      {where: {id: req.params.id, activated: 0}}
-    ).then(() => {
-      users.find(req, res);
-    }).catch(error => {
-      const err = Boom.notAcceptable(error.message, error.errors);
-      err.output.payload.details = err.data;
-      res(err);
-    });
-  },
-  deActivate: (req, res) => {
-    models.Users.update(
-      {activated: 0},
-      {where: {id: req.params.id, activated: 1}}
-    ).then(() => {
-      users.find(req, res);
-    }).catch(error => {
-      const err = Boom.notAcceptable(error.message, error.errors);
-      err.output.payload.details = err.data;
-      res(err);
-    });
-  },
-  setMentor: (req, res) => {
-    models.Users.update(
-      {UserId: req.payload.mentor},
-      {where: {id: req.params.id}}
-    ).then(() => {
-      users.find(req, res);
-    }).catch(error => {
-      const err = Boom.notAcceptable(error.message, error.errors);
-      err.output.payload.details = err.data;
-      res(err);
-    });
   },
   login: (req, res) => {
     models.Users.findOne({

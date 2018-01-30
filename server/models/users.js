@@ -31,12 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     classMethods: {
-      associate: models => {
-        Users.hasOne(Users);
-        Users.hasMany(models.daily_task);
-        Users.hasMany(models.weekly_task);
-        Users.hasMany(models.monthly_task);
-      }
+      associate: models => {}
     }
   });
   return Users;
