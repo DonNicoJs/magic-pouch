@@ -50,6 +50,8 @@
         return {
           url: '/api/send-file',
           dictDefaultMessage: 'Touch to upload files',
+          maxFilesize: 180,
+          filesizeBase: 1024,
           params: {
             uuid: this.code
           }
