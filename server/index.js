@@ -81,18 +81,12 @@ taskApi.forEach(apiName => {
 });
 
 server.route({
-  method: 'GET',
-  path: '/api/mentored',
-  handler: handlers.users.mentored
-});
-
-server.route({
   method: 'POST',
   path: '/api/send-file',
   config: {
     payload: {
       output: 'stream',
-      maxBytes: 10485760,
+      maxBytes: 200485760,
       parse: true,
       allow: 'multipart/form-data'
     },
@@ -116,6 +110,7 @@ server.route({
           const path = `/uploads/${data.file.hapi.filename}/${data.uuid}/`;
           const fileName = data.file.hapi.filename;
           const ctx = peersCache[data.uuid];
+          ctx.files.push(fileName);
           ctx.ws.send(JSON.stringify({mutation: 'FILE_ADDED', namespace: 'ws', data: {fileName, path}}));
           res();
         });
@@ -123,6 +118,13 @@ server.route({
     }
   }
 });
+
+function deleteFiles(files) {
+  files.forEach(name => {
+    const path = p.join(__dirname, '/uploads/', name);
+    fs.unlink(path);
+  });
+}
 
 server.route({
   method: 'POST',
@@ -134,6 +136,7 @@ server.route({
         initially: false,
         connect: ({ ctx, ws }) => {
           ctx.ws = ws;
+          ctx.files = [];
           ctx.to = setInterval(() => {
             ws.send(JSON.stringify({ cmd: 'PING' }));
           }, 5000);
@@ -142,6 +145,7 @@ server.route({
           if (ctx.to !== null) {
             clearTimeout(ctx.to);
             ctx.to = null;
+            deleteFiles(ctx.files);
           }
         }
       }
@@ -165,7 +169,7 @@ server.route({
       const decipher = crypto.createDecipher('aes-256-cbc', req.params.uuid);
       const path = p.join(__dirname, '/uploads/', req.params.pic);
       const input = fs.createReadStream(path);
-      res(input.pipe(decipher)).header('Content-disposition', 'attachment; filename=' + req.params.pic);
+      res(input.pipe(decipher)).header('Content-disposition', 'attachment; filename=' + req.params.pic + '; filename*=UTF-8\'\'' + req.params.pic);
     }
   }
 });
