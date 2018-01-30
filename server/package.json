@@ -13,7 +13,7 @@
     "jsonwebtoken": "^7.3.0",
     "password-hash": "^1.2.2",
     "sequelize": "^3.30.2",
-    "sqlite3": "^3.1.8"
+    "sqlite3": "^3.1.13"
   },
   "scripts": {
     "dev": "gulp",
