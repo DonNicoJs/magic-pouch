@@ -65,7 +65,7 @@
       async openScarDialog () {
         this.dialog = true;
         this.code = null;
-        this.scanner = new this.$istascan.Scanner({ video: this.$refs.qrPreview });
+        this.scanner = new this.$istascan.Scanner({ video: this.$refs.qrPreview, mirror: false });
         this.scanner.addListener('scan', (content) => {
           this.code = content;
           this.dialog = false;
