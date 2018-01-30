@@ -73,7 +73,7 @@
 
         const cameras = await this.$istascan.Camera.getCameras();
         if (cameras.length > 0) {
-          this.scanner.start(cameras[0]);
+          this.scanner.start(cameras[1] ? cameras[1] : cameras[0]);
         } else {
           console.error('No cameras found.');
         }
