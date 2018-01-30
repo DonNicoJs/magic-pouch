@@ -41,4 +41,4 @@ const store = new Vuex.Store({
   plugins: [persisted]
 });
 
-export default store;
+export default () => store;

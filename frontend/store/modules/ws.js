@@ -3,7 +3,8 @@ const state = {
   link: false,
   event: null,
   wsUrl: null,
-  files: []
+  files: [],
+  chunks: []
 };
 
 const actions = {
@@ -26,6 +27,16 @@ const mutations = {
   },
   SET_WS_URL (state, url) {
     state.wsUrl = url;
+  },
+  FILE_CHUNK (state, event) {
+    state.chunks.push(event.chunk);
+  },
+  FILE_READY (state, event) {
+    const file = {
+      fileName: event.data.fileName,
+      path: `data:${event.data.contentType};base64, ${state.chunks.join('')}`
+    };
+    state.files.push(file);
   }
 };
 

@@ -20,14 +20,20 @@ module.exports = {
    ** Customize the progress-bar color
    */
   loading: { color: '#3B8070' },
-  /*
-   ** Build configuration
-   */
+  modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy',
+    '@nuxtjs/vuetify'
+  ],
+  axios: {
+  },
+  proxy: {
+    '/api': 'http://localhost:9010/'
+  },
   plugins: [
-    '~plugins/axios',
-    '~plugins/element',
-    { src: '~plugins/ws', ssr: false },
-    { src: '~plugins/vuex-router-sync', ssr: false }
+    { src: '~/plugins/ws', ssr: false },
+    { src: '~/plugins/instascan', ssr: false },
+    { src: '~/plugins/vuex-router-sync', ssr: false }
   ],
   build: {
     /*
@@ -36,6 +42,9 @@ module.exports = {
     vendor: ['axios'],
     extend (config, ctx) {
       if (ctx.isClient) {
+        config.node = {
+          fs: 'empty'
+        };
         config.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,

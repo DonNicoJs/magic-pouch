@@ -1,33 +1,23 @@
 <template>
-  <section class="container">
-    <div>
-      <el-row type="flex" justify="center">
-        <el-col :span="6">
-          <p>Scan the code with the Magic-Pouch app or type it directly to start uploading files</p>
-        </el-col>
-      </el-row>
-      <el-row type="flex" justify="center" align="middle" :gutter="20">
-        <el-col :span="6">
-          <img :src="qrUrl" alt="mainQr" class="code-qr">
-        </el-col>
-        <el-col :span="3">
-          <h1 class="code-or">OR</h1>
-        </el-col>
-        <el-col :span="6">
-          <h1 class="code"> {{uuid}}</h1>
-        </el-col>
-      </el-row>
-
-
-
-      <ul class="files-container">
-        <li v-for="file in files">
-          <i class="el-icon-upload2"></i>
-          <a :href="file.path">{{file.fileName}}</a>
-        </li>
-      </ul>
-    </div>
-  </section>
+<v-layout row wrap>
+  <v-flex xs12>
+    <h2>Receive your files</h2>
+  </v-flex>
+  <v-flex xs12 md6>
+    <h1 class="code"> {{uuid}}</h1>
+  </v-flex>
+  <v-flex xs12 md6>
+     <img :src="qrUrl" alt="mainQr" class="code-qr">
+  </v-flex>
+  <v-flex xs12>
+    <ul class="files-container">
+      <li v-for="file in files" :key="file.fileName">
+        <i class="el-icon-upload2"></i>
+        <a :href="file.path" :download="file.fileName">{{file.fileName}}</a>
+      </li>
+    </ul>
+  </v-flex>
+</v-layout>
 </template>
 
 <script>
