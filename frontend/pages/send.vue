@@ -17,11 +17,11 @@
         <v-text-field v-model="code" maxlength="5" minlength="5"></v-text-field>
       </v-flex>
       <v-flex xs12 md6>
-        <v-btn color="primary" @click.stop="openScarDialog">Scan your code </v-btn>
+        <v-btn color="primary" @click.stop="openScanDialog">Scan your code </v-btn>
       </v-flex>
       <v-flex xs12>
         <div v-if="showFilePicker" class="pick-file">
-          <dropzone id="drop-box" :options="options"></dropzone>
+            <dropzone id="drop-box" :options="options"></dropzone>
         </div>
       </v-flex>
     </v-layout>
@@ -29,75 +29,78 @@
 </template>
 
 <script>
-  import Dropzone from 'nuxt-dropzone';
-  import 'nuxt-dropzone/dropzone.css';
-  export default {
-    components: {
-      Dropzone
-    },
-    layout: 'main',
-    data () {
-      return {
-        code: null,
-        dialog: false
-      };
-    },
-    computed: {
-      showFilePicker () {
-        return this.code && this.code.length === 5;
-      },
-      options () {
-        return {
-          url: '/api/send-file',
-          dictDefaultMessage: 'Touch to upload files',
-          maxFilesize: 180,
-          filesizeBase: 1024,
-          params: {
-            uuid: this.code
-          }
-        };
-      },
-      uploadUrl () {
-        return '/api/send-file';
-      }
-    },
-    methods: {
-      async openScarDialog () {
-        this.dialog = true;
-        this.code = null;
-        this.scanner = new this.$istascan.Scanner({ video: this.$refs.qrPreview, mirror: false });
-        this.scanner.addListener('scan', (content) => {
-          this.code = content;
-          this.dialog = false;
-        });
+import Dropzone from 'nuxt-dropzone';
+import 'nuxt-dropzone/dropzone.css';
+import forge from 'node-forge';
+console.log(forge);
 
-        const cameras = await this.$istascan.Camera.getCameras();
-        if (cameras.length > 0) {
-          this.scanner.start(cameras[1] ? cameras[1] : cameras[0]);
-        } else {
-          console.error('No cameras found.');
+export default {
+  components: {
+    Dropzone
+  },
+  layout: 'main',
+  data () {
+    return {
+      code: null,
+      dialog: false
+    };
+  },
+  computed: {
+    showFilePicker () {
+      return this.code && this.code.length === 5;
+    },
+    options () {
+      return {
+        url: '/api/send-file',
+        dictDefaultMessage: 'Touch to upload files',
+        maxFilesize: 180,
+        filesizeBase: 1024,
+        params: {
+          uuid: this.code
         }
-      },
-      closeScanDialog () {
+      };
+    }
+  },
+  methods: {
+    async openScanDialog () {
+      this.dialog = true;
+      this.code = null;
+      this.scanner = new this.$istascan.Scanner({
+        video: this.$refs.qrPreview,
+        mirror: false
+      });
+      this.scanner.addListener('scan', content => {
+        this.code = content;
         this.dialog = false;
+      });
+
+      const cameras = await this.$istascan.Camera.getCameras();
+      if (cameras.length > 0) {
+        this.scanner.start(cameras[1] ? cameras[1] : cameras[0]);
+      } else {
+        console.error('No cameras found.');
       }
     },
-    watch: {
-      dialog: {
-        immediate: false,
-        handler (value) {
-          if (!value && this.scanner) {
-            this.scanner.stop();
-          }
+    closeScanDialog () {
+      this.dialog = false;
+    }
+  },
+  watch: {
+    dialog: {
+      immediate: false,
+      handler (value) {
+        if (!value && this.scanner) {
+          this.scanner.stop();
         }
       }
     }
-  };
+  }
+};
 </script>
 
 <style scoped lang="less">
-  .qr-preview {
-    width: 100%;
-    height: auto;
-  }
+.qr-preview {
+  width: 100%;
+  height: auto;
+}
 </style>

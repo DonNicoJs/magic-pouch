@@ -1,10 +1,10 @@
 {
-  "name": "Magic-Pouch-Web",
+  "name": "magic-pouch-web",
   "version": "1.0.0",
   "description": "Web Access to Magic Pouch",
   "author": "lordfuoco@gmail.com",
   "private": true,
-  "config" : {
+  "config": {
     "nuxt": {
       "host": "0.0.0.0",
       "port": "3000"
@@ -20,7 +20,9 @@
     "@nuxtjs/axios": "^5.0.0-rc.1",
     "@nuxtjs/proxy": "^1.1.4",
     "@nuxtjs/vuetify": "^0.4.0",
+    "crypto-js": "^3.1.9-1",
     "instascan": "^1.0.0",
+    "node-forge": "^0.7.1",
     "nuxt": "^1.2.1",
     "nuxt-dropzone": "^0.2.7",
     "vue-native-websocket": "^1.0.0",
@@ -45,8 +47,12 @@
     "eslint-plugin-html": "^2.0.0",
     "eslint-plugin-promise": "^3.4.1",
     "eslint-plugin-standard": "^2.0.1",
+    "eslint-plugin-vue": "^4.2.2",
     "less": "^2.7.2",
-    "less-loader": "^4.0.4"
+    "less-loader": "^4.0.4",
+    "prettier": "^1.10.2",
+    "prettier-eslint": "^8.8.1",
+    "prettier-eslint-cli": "^4.7.1"
   },
   "main": "index.js",
   "license": "MIT"
