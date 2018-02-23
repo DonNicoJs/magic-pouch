@@ -1,84 +1,20 @@
 const Hapi = require('hapi');
-const Inert = require('inert');
-const jwtAuth = require('hapi-auth-jwt2');
 const HAPIWebSocket = require('hapi-plugin-websocket');
-const fs = require('fs');
+const fs = require('fs-extra');
 const p = require('path');
 const crypto = require('crypto');
 
-const models = require('./models');
-
-const handlers = {
-  users: require('./controllers/users')
-};
 
 // create the server
 const server = new Hapi.Server();
 
-server.connection({host: '127.0.0.1', port: 9010, routes: { cors: true }});
+server.connection({host: '127.0.0.1', port: 9010, routes: { cors: false }});
 
-server.register([Inert, jwtAuth, HAPIWebSocket], () => {});
+server.register([HAPIWebSocket], () => {});
 
-const secretKey = require('./secret');
-
-server.auth.strategy('jwt', 'jwt', true,
-  { key: secretKey,
-    validateFunc: function (request, session, callback) {
-      cache.get(request.token, (err, cached) => {
-        if (err) {
-          return callback(err, false);
-        }
-
-        if (!cached) {
-          return callback(null, false);
-        }
-
-        return callback(null, true, cached.user);
-      });
-    },
-    verifyOptions: { algorithms: [ 'HS256' ] } // pick a strong algorithm
-  });
-
-const cache = server.cache({ segment: 'sessions', expiresIn: 3 * 24 * 60 * 60 * 1000 });
+const cache = server.cache({ segment: 'sessions', expiresIn: 60 * 60 * 1000 });
 const peersCache = {};
 server.app.cache = cache;
-
-server.route({
-  method: 'POST',
-  path: '/api/login/',
-  config: {
-    handler: handlers.users.login,
-    auth: {mode: 'try'}
-  }
-});
-
-const taskApi = ['users'];
-
-taskApi.forEach(apiName => {
-  const postConfig = {
-    method: 'POST',
-    path: `/api/${apiName}/`,
-    config: {
-      handler: handlers[apiName].create
-    }
-  };
-  if (apiName === 'users') {
-    postConfig.config.auth = false;
-  }
-  server.route(postConfig);
-
-  server.route({
-    method: 'GET',
-    path: `/api/${apiName}/`,
-    handler: handlers[apiName].all
-  });
-
-  server.route({
-    method: 'GET',
-    path: `/api/${apiName}/{id}`,
-    handler: handlers[apiName].find
-  });
-});
 
 server.route({
   method: 'POST',
@@ -90,27 +26,30 @@ server.route({
       parse: true,
       allow: 'multipart/form-data'
     },
-    auth: false,
     handler: (req, res) => {
       const data = req.payload;
-      if (data.file) {
-        const name = data.file.hapi.filename;
-        const path = p.join(__dirname, '/uploads/', name);
+
+      const hash = crypto.createHash('sha256').update('' + data.uuid).digest('hex');
+      const ctx = peersCache[hash];
+      if (!ctx) {
+        res({code: 1, message: 'Invalid uuid'}).code(400);
+      } else if (data.file) {
+        const storedName = crypto.createHash('sha256').update(data.file.hapi.filename).digest('hex');
+        const path = p.join(__dirname, '/uploads/', storedName);
         const output = fs.createWriteStream(path);
 
         const cipher = crypto.createCipher('aes-256-cbc', data.uuid);
 
         output.on('error', err => {
           console.error(err);
+          res('Error saving the file').code(500);
         });
 
         data.file.pipe(cipher).pipe(output);
-
         data.file.on('end', () => {
-          const path = `/uploads/${data.file.hapi.filename}/${data.uuid}/`;
+          const path = `/uploads/${data.file.hapi.filename}/`;
           const fileName = data.file.hapi.filename;
-          const ctx = peersCache[data.uuid];
-          ctx.files.push(fileName);
+          ctx.files.push(storedName);
           ctx.ws.send(JSON.stringify({mutation: 'FILE_ADDED', namespace: 'ws', data: {fileName, path}}));
           res();
         });
@@ -144,18 +83,19 @@ server.route({
         disconnect: ({ ctx }) => {
           if (ctx.to !== null) {
             clearTimeout(ctx.to);
-            ctx.to = null;
             deleteFiles(ctx.files);
+            ctx.to = null;
+            ctx.ws = null;
           }
         }
       }
-    },
-    auth: false
+    }
   },
   handler: (request, reply) => {
     const ctx = request.websocket().ctx;
     const uuid = request.payload.uuid;
-    peersCache[uuid] = ctx;
+    const hash = crypto.createHash('sha256').update(''+ uuid).digest('hex');
+    peersCache[hash] = ctx;
     reply({mutation: 'LINK_ESTABLISHED', namespace: 'ws'});
   }
 });
@@ -164,18 +104,19 @@ server.route({
   method: 'GET',
   path: '/uploads/{pic}/{uuid}/',
   config: {
-    auth: false,
     handler: (req, res) => {
       const decipher = crypto.createDecipher('aes-256-cbc', req.params.uuid);
-      const path = p.join(__dirname, '/uploads/', req.params.pic);
+      const storedName = crypto.createHash('sha256').update(req.params.pic).digest('hex');
+      const path = p.join(__dirname, '/uploads/', storedName);
       const input = fs.createReadStream(path);
       res(input.pipe(decipher)).header('Content-disposition', 'attachment; filename=' + req.params.pic + '; filename*=UTF-8\'\'' + req.params.pic);
     }
   }
 });
 
-models.sequelize.sync().then(function () {
-  server.start(function () {
-    console.log('Running on 9010');
-  });
+server.start(function () {
+  const path = p.join(__dirname, '/uploads/');
+  fs.removeSync(path)
+  fs.mkdirSync(path);
+  console.log('Running on 9010');
 });
