@@ -14,7 +14,7 @@
       </v-flex>
       <v-flex xs12 md6>
         <h6>Type your code</h6>
-        <v-text-field v-model="code" maxlength="5" minlength="5"></v-text-field>
+        <v-text-field v-model="code" maxlength="8" minlength="8"></v-text-field>
       </v-flex>
       <v-flex xs12 md6>
         <v-btn color="primary" @click.stop="openScanDialog">Scan your code </v-btn>
@@ -31,8 +31,6 @@
 <script>
 import Dropzone from 'nuxt-dropzone';
 import 'nuxt-dropzone/dropzone.css';
-import forge from 'node-forge';
-console.log(forge);
 
 export default {
   components: {
@@ -47,7 +45,7 @@ export default {
   },
   computed: {
     showFilePicker () {
-      return this.code && this.code.length === 5;
+      return this.code && this.code.length === 8;
     },
     options () {
       return {

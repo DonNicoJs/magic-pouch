@@ -22,23 +22,26 @@
 
 <script>
   import RouterButton from '../components/RouterButton.vue';
+  import { mapGetters } from 'vuex';
 
   export default {
     components: {
       RouterButton
     },
     layout: 'main',
+    fetch ({store: {dispatch}}) {
+      dispatch('ws/generateUUID');
+    },
     data () {
-      return {
-        uuid: null
-      };
+      return {};
     },
     computed: {
+      ...mapGetters({
+        files: 'ws/getFiles',
+        uuid: 'ws/getUUID'
+      }),
       qrUrl () {
         return 'https://chart.googleapis.com/chart?cht=qr&chs=' + 400 + 'x' + 400 + '&chl=' + encodeURIComponent(this.uuid);
-      },
-      files () {
-        return this.$store.state.ws.files;
       },
       socketLink () {
         return this.$store.state.socket.isConnected;
@@ -47,12 +50,6 @@
     methods: {
       registerToServer () {
         this.$socket.sendObj({uuid: this.uuid});
-      },
-      createUUID () {
-        return 'xxxxx'.replace(/[xy]/g, c => {
-          const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8); // eslint-disable-line eqeqeq
-          return v.toString(16);
-        });
       }
     },
     watch: {
@@ -60,7 +57,6 @@
         immediate: true,
         handler: function (link) {
           if (link && !this.$isServer) {
-            this.uuid = this.createUUID();
             this.registerToServer();
           }
         }

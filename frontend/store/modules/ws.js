@@ -4,7 +4,23 @@ const state = {
   event: null,
   wsUrl: null,
   files: [],
+  uuid: '',
   chunks: []
+};
+
+const getters = {
+  getFiles: (state) => {
+    return state.files.map(f => {
+      const path = `${f.path}${state.uuid}/`;
+      return {
+        ...f,
+        path
+      };
+    });
+  },
+  getUUID: (state) => {
+    return state.uuid;
+  }
 };
 
 const actions = {
@@ -14,6 +30,16 @@ const actions = {
     } else {
       commit('SET_WS_URL', 'wss://magic-pouch.blazenet.info/pouch');
     }
+  },
+  generateUUID ({commit}) {
+    const pool = '23456789abdegjkmnpqrvwxyz';
+
+    const length = 8;
+    let uuid = '';
+    for (let i = 0; i < length; i++) {
+      uuid += pool.charAt(Math.floor(Math.random() * pool.length));
+    }
+    commit('SET_UUID', uuid);
   }
 };
 
@@ -28,21 +54,15 @@ const mutations = {
   SET_WS_URL (state, url) {
     state.wsUrl = url;
   },
-  FILE_CHUNK (state, event) {
-    state.chunks.push(event.chunk);
-  },
-  FILE_READY (state, event) {
-    const file = {
-      fileName: event.data.fileName,
-      path: `data:${event.data.contentType};base64, ${state.chunks.join('')}`
-    };
-    state.files.push(file);
+  SET_UUID (state, uuid) {
+    state.uuid = uuid;
   }
 };
 
 export default {
   state,
   actions,
+  getters,
   mutations,
   namespaced: true
 };
