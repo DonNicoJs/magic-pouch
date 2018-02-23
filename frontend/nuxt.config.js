@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   /*
    ** Headers of the page
    */
@@ -28,7 +28,8 @@ module.exports = {
   axios: {
   },
   proxy: {
-    '/api': 'http://localhost:9010/'
+    '/api': 'http://localhost:9010/',
+    '/uploads': 'http://localhost:9010/'
   },
   plugins: [
     { src: '~/plugins/ws', ssr: false },
@@ -39,7 +40,7 @@ module.exports = {
     /*
      ** Run ESLINT on save
      */
-    vendor: ['axios'],
+    vendor: ['axios', 'vuetify'],
     extend (config, ctx) {
       if (ctx.isClient) {
         config.node = {
@@ -55,3 +56,12 @@ module.exports = {
     }
   }
 };
+
+if (process.env.NODE_ENV === 'production') {
+  config.axios = {
+  };
+  config.proxy = {
+  };
+}
+
+module.exports = config;
